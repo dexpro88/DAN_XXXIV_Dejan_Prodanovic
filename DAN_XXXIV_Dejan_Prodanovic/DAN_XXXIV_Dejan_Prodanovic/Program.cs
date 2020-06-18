@@ -10,8 +10,8 @@ namespace DAN_XXXIV_Dejan_Prodanovic
   
         class Program
         {
-            static void Main(string[] args)
-            {
+           static void Main(string[] args)
+           {
               Random rnd = new Random();
               Bank bank = new Bank();
               Queue<Thread> cashMashine1Clients = new Queue<Thread>();
@@ -22,21 +22,23 @@ namespace DAN_XXXIV_Dejan_Prodanovic
               Console.WriteLine("Unesite broj klijenata koji podizu novac sa drugog bankomata:");
               int secondMashineQueueLength = IntInput();
 
-            for (int i = 0; i < 10; i++)
-              {
-                 Thread t1 = new Thread(() => bank.DoTransactionsOnCashMashine1(rnd.Next(10,10000)));
-                t1.Name = String.Format("Klijent{0}_Bankomat1",i+1);
-                cashMashine1Clients.Enqueue(t1);
-                Thread t2 = new Thread(() => bank.DoTransactionsOnCashMashine2(rnd.Next(10, 10000)));
-                t2.Name = String.Format("Klijent{0}_Bankomat2", i + 1);
-                cashMashine2Clients.Enqueue(t2);
-            }
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < firstMashineQueueLength; i++)
             {
-              cashMashine1Clients.Dequeue().Start();
-                cashMashine2Clients.Dequeue().Start();
+                 Thread t = new Thread(() => bank.DoTransactionsOnCashMashine1(rnd.Next(10,10000)));
+                t.Name = String.Format("Klijent{0}_Bankomat1",i+1);
+                cashMashine1Clients.Enqueue(t);
+               
             }
-            
+            for (int i = 0; i < secondMashineQueueLength; i++)
+            {
+                Thread t = new Thread(() => bank.DoTransactionsOnCashMashine2(rnd.Next(10, 10000)));
+                t.Name = String.Format("Klijent{0}_Bankomat2", i + 1);
+                cashMashine2Clients.Enqueue(t);
+            }
+
+            StartThreads(cashMashine1Clients, cashMashine2Clients);
+
+
             Console.ReadLine();
           }
 
@@ -54,7 +56,34 @@ namespace DAN_XXXIV_Dejan_Prodanovic
             } while (!succes || value <= 0);
             return value;
           }
-       }
-
+        static void StartThreads(Queue<Thread> cashMashine1Clients ,Queue<Thread> cashMashine2Clients)
+        {
+            if (cashMashine2Clients.Count < cashMashine1Clients.Count)
+            {
+                for (int i = 0; i < cashMashine2Clients.Count; i++)
+                {
+                    cashMashine2Clients.Dequeue().Start();
+                    cashMashine1Clients.Dequeue().Start();
+                }
+                while (cashMashine1Clients.Count != 0)
+                {
+                    cashMashine1Clients.Dequeue().Start();
+                }
+            }
+            else
+            {
+                for (int i = 0; i < cashMashine1Clients.Count; i++)
+                {
+                    cashMashine2Clients.Dequeue().Start();
+                    cashMashine1Clients.Dequeue().Start();
+                }
+                while (cashMashine2Clients.Count != 0)
+                {
+                    cashMashine2Clients.Dequeue().Start();
+                }
+            }
+        }
+      }
+      
     }
  
