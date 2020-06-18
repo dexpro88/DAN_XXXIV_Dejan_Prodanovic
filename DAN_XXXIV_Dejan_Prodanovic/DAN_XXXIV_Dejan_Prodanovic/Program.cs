@@ -41,7 +41,11 @@ namespace DAN_XXXIV_Dejan_Prodanovic
 
             Console.ReadLine();
           }
-
+        /// <summary>
+        /// method that takes int input from the keyboard
+        /// it disables user to input invalid values
+        /// </summary>
+        /// <returns></returns>
           static int IntInput()
           {
             bool succes=false;
@@ -56,6 +60,13 @@ namespace DAN_XXXIV_Dejan_Prodanovic
             } while (!succes || value <= 0);
             return value;
           }
+
+        /// <summary>
+        /// method that starts threads from 2 queues (one is for first cash mashine,
+        /// one for second cash mashine). it starts threads from both queues alternately
+        /// </summary>
+        /// <param name="cashMashine1Clients"></param>
+        /// <param name="cashMashine2Clients"></param>
         static void StartThreads(Queue<Thread> cashMashine1Clients ,Queue<Thread> cashMashine2Clients)
         {
             if (cashMashine2Clients.Count < cashMashine1Clients.Count)
